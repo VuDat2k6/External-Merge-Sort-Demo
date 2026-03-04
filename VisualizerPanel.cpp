@@ -275,7 +275,7 @@ void VisualizerPanel::OnPaint(wxPaintEvent&)
     drawFrame(f2, 1);
     drawFrame(f3, 2);
 
-    // OUT frame: nhiều hàng
+    // OUT frame
     {
         const int cellW = 36;
         const int cellH = 24;
@@ -304,12 +304,12 @@ void VisualizerPanel::OnPaint(wxPaintEvent&)
     }
 
     // =========================================================
-    // RIGHT: SECONDARY STORAGE (gọn, không lộn xộn)
+    // RIGHT: SECONDARY STORAGE
     // =========================================================
     wxRect rightBox(splitX + 18, titleH + 16, sz.GetWidth() - splitX - 36, sz.GetHeight() - titleH - 34);
     DrawPanelBox(dc, rightBox, "SECONDARY STORAGE VIEW", wxColour(240, 250, 240));
 
-    // -------- ACTIVE RUNS (chỉ 3 run đang active) --------
+    // -------- ACTIVE RUNS 
     dc.SetFont(wxFontInfo(9).Bold());
     dc.SetTextForeground(*wxBLACK);
     dc.DrawText("ACTIVE RUNS (selected in current group):", rightBox.x + 18, rightBox.y + 48);
@@ -440,4 +440,5 @@ void VisualizerPanel::OnPaint(wxPaintEvent&)
         wxSize ts = dc.GetTextExtent(txt);
         dc.DrawText(txt, x - ts.GetWidth() / 2, y - ts.GetHeight() / 2);
     }
+
 }
