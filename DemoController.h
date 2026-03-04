@@ -11,8 +11,8 @@ struct DemoStep {
 
 class DemoController {
 public:
-    static constexpr int K = 3;            // M-1 input frames
-    static constexpr std::size_t PAGE_CAP = 2; // mỗi page chứa 2 số để dễ minh họa
+    static constexpr int K = 3;     
+    static constexpr std::size_t PAGE_CAP = 2; 
 
     void Build(const std::vector<double>& inputValues, std::size_t chunkSizeElements = 4);
 
@@ -35,4 +35,5 @@ private:
 
 private:
     void RebuildTo(int idx);
+
 };
