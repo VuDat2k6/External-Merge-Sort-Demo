@@ -33,7 +33,7 @@ namespace {
         return false;
     }
 
-} // namespace
+} 
 
 void DemoController::Build(const std::vector<double>& inputValues, std::size_t chunkSizeElements)
 {
@@ -48,9 +48,6 @@ void DemoController::Build(const std::vector<double>& inputValues, std::size_t c
     initialState.input = inputValues;
     initialState.frames.assign(K, DemoFrameCursor{});
 
-    // =========================================================
-    // PASS 0: tạo các run ban đầu từ chunk
-    // =========================================================
     std::vector<std::vector<double>> rawChunks;
     for (std::size_t i = 0; i < inputValues.size(); i += chunkSizeElements) {
         const std::size_t end = std::min(i + chunkSizeElements, inputValues.size());
@@ -63,7 +60,6 @@ void DemoController::Build(const std::vector<double>& inputValues, std::size_t c
         runsPass0.push_back(MakeRunFromValues(chunk, PAGE_CAP));
     }
 
-    // Step: show unsorted initial runs
     {
         auto runsSnapshot = runsPass0;
         steps.push_back({
@@ -117,10 +113,7 @@ void DemoController::Build(const std::vector<double>& inputValues, std::size_t c
 
     bool finalStepAdded = false;
     int passNo = 1;
-
-    // =========================================================
-    // PASS i
-    // =========================================================
+    
     while (passRuns.size() > 1) {
         std::vector<DemoRun> plannedNextRuns;
         int groupNo = 1;
@@ -147,7 +140,6 @@ void DemoController::Build(const std::vector<double>& inputValues, std::size_t c
             DemoRun builtRun;
             std::vector<double> outBuf;
 
-            // Step 1: chọn group run và load page đầu tiên vào F1..F3
             {
                 auto currentRunsSnapshot = passRuns;
                 steps.push_back({
@@ -173,7 +165,6 @@ void DemoController::Build(const std::vector<double>& inputValues, std::size_t c
                     });
             }
 
-            // Step 2: tạo run đầu ra mới cho group này
             steps.push_back({
                 "Tạo run đầu ra mới cho group hiện tại.",
                 [](DemoState& s) {
@@ -181,8 +172,7 @@ void DemoController::Build(const std::vector<double>& inputValues, std::size_t c
                     s.outputFrame.clear();
                 }
                 });
-
-            // Merge group
+            
             while (true) {
                 int bestLocal = -1;
                 double bestValue = 0.0;
@@ -201,12 +191,11 @@ void DemoController::Build(const std::vector<double>& inputValues, std::size_t c
                 }
 
                 if (bestLocal < 0) {
-                    break; // group đã hết dữ liệu
+                    break; 
                 }
 
                 const int bestFrame = bestLocal;
 
-                // Step A: chọn min
                 steps.push_back({
                     "Tìm phần tử nhỏ nhất trong các pointed records.",
                     [passNo, groupNo, bestFrame, bestValue](DemoState& s) {
@@ -218,15 +207,12 @@ void DemoController::Build(const std::vector<double>& inputValues, std::size_t c
                     }
                     });
 
-                // Step B: animate vào OUT
                 steps.push_back({
                     "Di chuyển phần tử nhỏ nhất vào output frame.",
                     [](DemoState&) {
-                        // Không đổi state; VisualizerPanel sẽ tự animate khi hasPending=true
                     }
                     });
 
-                // Chuẩn bị trạng thái sau commit
                 const auto oldPage = local[static_cast<std::size_t>(bestLocal)].page;
                 const auto oldRec = local[static_cast<std::size_t>(bestLocal)].rec;
 
@@ -248,7 +234,6 @@ void DemoController::Build(const std::vector<double>& inputValues, std::size_t c
                     }
                 }
 
-                // Step C: ghi vào OUT + tăng pointer hoặc load page kế
                 steps.push_back({
                     "Ghi phần tử vào output frame và cập nhật pointer tương ứng.",
                     [bestFrame, bestValue, stillActive, newPage, newRec](DemoState& s) {
@@ -281,7 +266,6 @@ void DemoController::Build(const std::vector<double>& inputValues, std::size_t c
                     local[static_cast<std::size_t>(bestLocal)].active = false;
                 }
 
-                // Nếu output frame đầy thì flush ra secondary storage
                 if (outBuf.size() == PAGE_CAP) {
                     const auto pageToFlush = outBuf;
                     builtRun.pages.push_back(pageToFlush);
@@ -299,7 +283,6 @@ void DemoController::Build(const std::vector<double>& inputValues, std::size_t c
                 }
             }
 
-            // flush page cuối nếu còn
             if (!outBuf.empty()) {
                 const auto pageToFlush = outBuf;
                 builtRun.pages.push_back(pageToFlush);
@@ -332,7 +315,6 @@ void DemoController::Build(const std::vector<double>& inputValues, std::size_t c
         }
 
         if (plannedNextRuns.size() > 1) {
-            // Kết thúc pass, chuyển sang pass mới
             steps.push_back({
                 "Kết thúc pass hiện tại: dùng các run mới làm input cho pass tiếp theo.",
                 [passNo](DemoState& s) {
@@ -349,7 +331,6 @@ void DemoController::Build(const std::vector<double>& inputValues, std::size_t c
                 });
         }
         else {
-            // Chỉ còn 1 run cuối
             steps.push_back({
                 "Hoàn tất: chỉ còn 1 run cuối cùng.",
                 [passNo](DemoState& s) {
@@ -378,7 +359,6 @@ void DemoController::Build(const std::vector<double>& inputValues, std::size_t c
         passNo++;
     }
 
-    // Trường hợp ngay từ đầu đã chỉ có 1 run
     if (!finalStepAdded && passRuns.size() == 1) {
         const auto onlyRun = passRuns.front();
         steps.push_back({
@@ -450,4 +430,5 @@ const DemoState& DemoController::GetState() const
 std::string DemoController::GetDescription() const
 {
     return currentDescription;
+
 }
