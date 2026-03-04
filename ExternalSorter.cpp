@@ -75,7 +75,6 @@ void ExternalSorter::sortDoublesBinary(const std::string& inputPath,
         return;
     }
 
-    // ===== Phase 1: Split + Sort =====
     const std::uint64_t chunkBytes =
         static_cast<std::uint64_t>(chunkMB) * 1024ULL * 1024ULL;
     const std::uint64_t chunkCap =
@@ -128,7 +127,6 @@ void ExternalSorter::sortDoublesBinary(const std::string& inputPath,
         L("  Wrote run " + std::to_string(runIdx) + ": " + runPath + "\n");
     }
 
-    // ===== Helper: merge one group =====
     auto mergeGroup = [&](const std::vector<std::string>& group, const std::string& outRun) {
         struct Node {
             double value;
@@ -173,7 +171,6 @@ void ExternalSorter::sortDoublesBinary(const std::string& inputPath,
         }
         };
 
-    // ===== Phase 2: Multi-pass merge =====
     const std::size_t FAN_IN = 32;
     L("Phase 2: multi-pass merge (fan-in = " + std::to_string(FAN_IN) + ")\n");
 
@@ -258,4 +255,5 @@ void ExternalSorter::sortDoublesBinary(const std::string& inputPath,
 
     P(100);
     L("Done. Output: " + outputPath + "\n");
+
 }
