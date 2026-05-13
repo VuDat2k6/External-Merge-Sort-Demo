@@ -1,0 +1,23 @@
+# Build files
+*.obj
+*.exe
+*.o
+*.pdb
+*.ilk
+*.tlog
+*.idb
+
+# Visual Studio files
+.vs/
+*.sln
+*.vcxproj
+*.vcxproj.filters
+*.vcxproj.user
+
+# Archives
+*.zip
+*.rar
+*.tar.gz
+
+# Data files
+# test_data.bin and test_data_sorted.bin are small enough to commit, so we won't ignore *.bin
